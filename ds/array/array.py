@@ -45,7 +45,6 @@ class BaseArray(object):
         except (TypeError, ValueError):
             raise ValueError("Invalid index. It must be a positive integer")
         self.__array_elems[index] = value
-        return True
 
     def __len__(self):
         return self.__array_len
@@ -59,6 +58,7 @@ class BaseArray(object):
             self.__iter_cur_index += 1
             return next_val
         else:
+            self.__iter_cur_index = 0
             raise StopIteration
 
     def reset(self, default=None):
@@ -73,7 +73,7 @@ class BaseArray(object):
         """
         Set all array elements a common value
         :param value:
-        :return:
+        :return: None
         """
         for i in range(self.__array_len):
             self.__array_elems[i] = value
@@ -93,6 +93,10 @@ class GenericArray(BaseArray):
         super(GenericArray, self).__init__(self.__gen_array, self.__gen_array_size)
         self.reset()
 
+    def reset(self, default=None):
+        default = None
+        super(GenericArray, self).reset(default)
+
 
 class IntArray(BaseArray):
     """
@@ -109,18 +113,19 @@ class IntArray(BaseArray):
         self.reset(0)
 
     def __setitem__(self, index, value):
-        if type(value) != int:
-            raise TypeError("Value should be Integer")
-        super(IntArray, self).__setitem__(index, value)
+        try:
+            super(IntArray, self).__setitem__(index, int(value))
+        except ValueError:
+            raise ValueError("Value must be an Integer")
 
-    def reset(self, default=0):
-        default = 0
-        super(IntArray, self).reset(default)
+    def reset(self, default=None):
+        super(IntArray, self).reset(0)
 
     def set_all_to(self, default_value=0):
-        if type(default_value) != int:
-            raise TypeError("Value should be Integer")
-        super(IntArray, self).set_all_to(default_value)
+        try:
+            super(IntArray, self).set_all_to(int(default_value))
+        except ValueError:
+            raise ValueError("Value must be an Integer")
 
 
 class FloatArray(BaseArray):
@@ -138,18 +143,19 @@ class FloatArray(BaseArray):
         self.reset(0.0)
 
     def __setitem__(self, index, value):
-        if type(value) != float:
-            raise TypeError("Value should be Decimal (e.g. 12.0, etc.)")
-        super(FloatArray, self).__setitem__(index, value)
+        try:
+            super(FloatArray, self).__setitem__(index, float(value))
+        except ValueError:
+            raise ValueError("Value must be a Decimal Number")
 
     def set_all_to(self, default_value=0.0):
-        if type(default_value) != float:
-            raise TypeError("Value should be Decimal (e.g. 12.0, etc.)")
-        super(FloatArray, self).set_all_to(default_value)
+        try:
+            super(FloatArray, self).set_all_to(float(default_value))
+        except ValueError:
+            raise ValueError("Value must be a Decimal Number")
 
     def reset(self, default=0.0):
-        default = 0.0
-        super(FloatArray, self).reset(default)
+        super(FloatArray, self).reset(0.0)
 
 
 class CharArray(BaseArray):
@@ -164,7 +170,7 @@ class CharArray(BaseArray):
         self.__gen_array = self.__gen_array_type()
 
         super(CharArray, self).__init__(self.__gen_array, self.__gen_array_size)
-        self.reset("".encode('utf-8'))
+        self.reset()
 
     def __setitem__(self, index, value):
         if type(value) != str:
