@@ -57,7 +57,8 @@ class BaseMultiDimensionalArray(object):
         return self
 
     def __next__(self):
-        pass
+        # TODO: Iteration logic pending.
+        raise StopIteration
 
     @staticmethod
     def __is_valid_size(size):
